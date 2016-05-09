@@ -1,0 +1,14 @@
+{% load static from staticfiles %}
+<head>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'tkartapp/create.css' %}" type="text/css" media="screen"/>
+</head>
+<div class="center-block row">
+  <h3 class="text-center">Add a New Shirt Item to the Inventory:</h3>
+<div class="col-xs-12 center-block" style="padding-top:20px;">
+<form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" class="btn btn-default" value="Submit" />
+</form>
+</div>
+</div>

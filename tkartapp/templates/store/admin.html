@@ -1,0 +1,31 @@
+{% load static from staticfiles %}
+<head>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+  <link rel="stylesheet" href="{% static 'tkartapp/store.css' %}" type="text/css" media="screen"/>
+  <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+</head>
+<div>
+  <h2 class="text-center">Welcome to Tkart Store Inventory</h2>
+</div>
+<div  class="row padding20 center-block">
+  <h3 class="text-center">Inventory List:</h3>
+{% if shirt_list_admin %}
+    {% for shirt in shirt_list_admin %}
+    <div class="col-lg-3 center-block" id="{{shirt.id}}">
+      
+      <img src="../../../static/tkartapp/images/shirt{{shirt.id}}.jpg" class="center-block" height="200" width="200">
+      <h4 class="text-center">Shirt ID: {{shirt.id}} </h4>
+      <h4 class="text-center"><span id="name{{shirt.id}}">{{shirt.name}}</span> -- <span id="price{{shirt.id}}">Rs.{{shirt.price}} </span></h4>
+      <p class="text-center" id="description{{shirt.id}}">{{shirt.description}}</p>
+      <p class="text-center"> <span id="size{{shirt.id}}">Size:&nbsp;{{shirt.size}} &nbsp;</span> <span id="qty{{shirt.id}}">Qty:&nbsp;{{shirt.quantity}}</span> </p>
+    </div>
+    {% endfor %}
+</div>
+<div id="cartlist" class="cartitems hidden">
+  <h4 style="color:yellow">Items in Cart:</h4>
+  <div id="container">
+  </div>
+</div>
+{% else %}
+    <p>No shirts are available.</p>
+{% endif %}

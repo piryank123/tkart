@@ -1,0 +1,12 @@
+<h2>Login</h2>
+<form action="/tkartapp/auth/" method="post">{% csrf_token %}
+    <ul>
+      <li><label for="username">User name:</label>
+        <input type="text" name="username" value="" id="username"> </li>
+      <li><label for="password">Password:</label>
+        <input type="password" name="password" value="" id="password"> </li>
+      </ul>
+      <input type="submit" value="login" /><br/>
+      <a href="/tkartapp/register/">Register Here</a>
+  </form>
+

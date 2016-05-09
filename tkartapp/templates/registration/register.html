@@ -1,0 +1,16 @@
+  <h2>Register</h2>
+  <form action="/tkartapp/register/" method="post">{% csrf_token %}
+  <!-- {{form}} -->
+  <ul class="contactList">
+        <li>Username: {{ form.username }}</li>
+        <li>First Name: {{ form.first_name }}</li>
+        <li>Last Name: {{ form.last_name }}</li>
+        <li>Email: {{ form.email }}</li>
+        <li>Password: {{ form.password1 }}</li>
+        <li>Password Again: {{ form.password2 }}</li>
+
+  </ul>
+  <input type="submit" value="Register" /><br/>
+  <a href="/tkartapp/login">Login Here</a>
+  </form>
+
