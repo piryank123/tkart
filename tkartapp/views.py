@@ -80,9 +80,9 @@ def auth_view(request):
     user = auth.authenticate(username=username, password=password)
     if user is not None:
         auth.login(request, user)
-        return HttpResponseRedirect('tkartapp:loggedin')
+        return HttpResponseRedirect('/tkartapp/loggedin/')
     else:
-        return HttpResponseRedirect('tkartapp:invalid')
+        return HttpResponseRedirect('/tkartapp/invalid/')
 
 def loggedin(request):
     return render_to_response('registration/loggedin.html',
@@ -106,7 +106,7 @@ def register_user(request):
             last_name = form.cleaned_data['last_name'],
             email=form.cleaned_data['email']
             )
-            return HttpResponseRedirect('tkartapp:register_success')
+            return HttpResponseRedirect('/tkartapp/register_success/')
     else:
         form = RegistrationForm()
     variables = RequestContext(request, {'form': form})
