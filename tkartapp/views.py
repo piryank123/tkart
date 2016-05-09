@@ -18,7 +18,6 @@ from ipdb import set_trace
 from .models import Shirt, UserProfile
 from .forms import RegistrationForm
 
-
 class ShirtForm(ModelForm):
     class Meta:
         model = Shirt
