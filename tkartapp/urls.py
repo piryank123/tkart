@@ -6,6 +6,7 @@ app_name = 'tkartapp'
 urlpatterns = [
         url(r'^$', views.store, name='store'),
         url(r'^store/$', views.store, name='store'),
+        url(r'^store/viewcart/$',views.viewcart,name='viewcart'),
         url(r'^admin/index/$',views.shirt_list,name='shirt_list'),
         url(r'^admin/create/$',views.shirt_create,name='shirt_create'),
         url(r'^admin/update/(?P<pk>\d+)$',views.shirt_update,name='shirt_update'),

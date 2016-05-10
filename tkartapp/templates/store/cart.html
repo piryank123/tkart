@@ -9,9 +9,7 @@
   <h2 class="text-center">Cart Items:</h2> <a href="/tkartapp/logout/" class="text-right">Logout</a>
 </div>
 <div  class="row padding20 center-block">
-  {% for shirt in cart%}
-<p>{{shirt.name}} -- {{shirt.size}} -- {{shirt.price}} </p>
-
-  {% endfor %}
+{{request.session.cart}}
+{{test}}
 </div>
 

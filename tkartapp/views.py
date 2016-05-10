@@ -12,6 +12,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.template import RequestContext
+from django.core import serializers
+import json
+from collections import defaultdict
+
 
 from ipdb import set_trace
 
@@ -62,12 +66,28 @@ def shirt_delete(request, pk, template_name='store/delete.html'):
         return redirect('tkartapp:shirt_list')
     return render(request, template_name, {'object':shirt})
 
-def addtocart(request,pk,template_name='store/cart.html'):
-    shirt = Shirt.objects.filter(id = pk).values()
-    data  ={}
-    data['cart'] = shirt
+def addtocart(request,pk,template_name='store/index.html'):
+    shirt = Shirt.objects.get(id = pk )
+    #cart_item.update({"name":shirt.name,"price":shirt.price})
+    #request.session['cart'] = cart_item['name']
+    array = ['']
+    array.append(pk)
+    request.session['cart'] = array
+    #data  ={}
+    #data['cart'] = shirt
 
-    return render(request,template_name,data)
+    #return render(context_instance = RequestContext(request),template_name,data)
+    #return render_to_response(template_name,context_instance=RequestContext(request))
+    return HttpResponseRedirect('/tkartapp/store/')
+
+def viewcart(request,template_name='store/cart.html'):
+    #cart_items = {}
+    #cart_items.update(request.session['cart'])
+    test = request.session['cart']
+
+    print test[1]
+    #return render_to_response(template_name,context_instance=RequestContext(request))
+    return render(request,template_name,{'test':test})
 
 def login(request):
     c = {}
