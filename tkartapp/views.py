@@ -76,6 +76,8 @@ def addtocart(request,products={},template_name='store/index.html'):
     size = request.POST['size']
     quantity = request.POST['quantity']
     price = request.POST['price']
+    #products[pk]['quantity'] += int(quantity)
+    #products[key]['quantity'] = unicode(products[key]['quantity'],"utf-8")
     products[pk]= {'name':name,'size':size,'quantity':quantity,'price':price}
     request.session['cart'] = products
     return HttpResponseRedirect('/tkartapp/store/')
