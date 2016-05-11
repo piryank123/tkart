@@ -1,3 +1,7 @@
+import json
+from collections import defaultdict
+from decimal import Decimal
+
 from django.shortcuts import get_object_or_404, render,redirect
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
@@ -5,7 +9,6 @@ from django.template import loader
 from django.http import Http404
 from django.core.urlresolvers import reverse
 from django.views import generic
-from django.forms import ModelForm
 from django.core.context_processors import csrf
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
@@ -13,93 +16,84 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.template import RequestContext
 from django.core import serializers
-import json
-from collections import defaultdict
-from decimal import Decimal
-
 
 from ipdb import set_trace
 
 from .models import Shirt, UserProfile
-from .forms import RegistrationForm
-
-class ShirtForm(ModelForm):
-    class Meta:
-        model = Shirt
-        fields = ['name','size','price','description','quantity']
-
+from .forms import RegistrationForm, ShirtForm
 
 @login_required(login_url='tkartapp:login')
 def store(request,template_name = 'store/index.html'):
-    shirt = Shirt.objects.all
-    data  = {}
-    data['shirt_list'] = shirt
+    #TODO rename shirt to shirts. As query returns an array of elements
+    shirts = Shirt.objects.all
 
-    return render(request,template_name,data)
+    return render(request,template_name,{'shirts': shirts})
 
-@login_required(login_url='tkartapp:login')
-def shirt_list(request,template_name = 'store/admin.html'):
-    shirt = Shirt.objects.all
-    data  = {}
-    data['shirt_list_admin'] = shirt
+# @login_required(login_url='tkartapp:login')
+# def shirt_list(request,template_name = 'store/admin.html'):
+    # shirt = Shirt.objects.all
+    # data  = {}
+    # data['shirt_list_admin'] = shirt
 
-    return render(request,template_name,data)
+    # return render(request,template_name,data)
 
-def shirt_create(request,template_name= 'store/form.html'):
-    form = ShirtForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('tkartapp:shirt_list')
+# def shirt_create(request,template_name= 'store/form.html'):
+    # form = ShirtForm(request.POST or None)
+    # if form.is_valid():
+        # form.save()
+        # return redirect('tkartapp:shirt_list')
 
-    return render(request,template_name,{'form':form})
+    # return render(request,template_name,{'form':form})
 
-def shirt_update(request,pk,template_name='store/form.html'):
-    shirt = get_object_or_404(Shirt, pk=pk)
-    form = ShirtForm(request.POST or None, instance = shirt)
-    if form.is_valid():
-        form.save()
-        return redirect('tkartapp:shirt_list')
+# def shirt_update(request,pk,template_name='store/form.html'):
+    # shirt = get_object_or_404(Shirt, pk=pk)
+    # form = ShirtForm(request.POST or None, instance = shirt)
+    # if form.is_valid():
+        # form.save()
+        # return redirect('tkartapp:shirt_list')
 
-    return render(request,template_name,{'form':form})
+    # return render(request,template_name,{'form':form})
 
-def shirt_delete(request, pk, template_name='store/delete.html'):
-    shirt= get_object_or_404(Shirt, pk=pk)
-    if request.method=='POST':
-        shirt.delete()
-        return redirect('tkartapp:shirt_list')
+# def shirt_delete(request, pk, template_name='store/delete.html'):
+    # shirt= get_object_or_404(Shirt, pk=pk)
+    # if request.method=='POST':
+        # shirt.delete()
+        # return redirect('tkartapp:shirt_list')
 
-    return render(request, template_name, {'object':shirt})
+    # return render(request, template_name, {'object':shirt})
 
-def addtocart(request,products={},template_name='store/index.html'):
-    pk = request.POST['id']
-    name= request.POST['name']
-    size = request.POST['size']
-    quantity = request.POST['quantity']
-    price = request.POST['price']
-    #products[pk]['quantity'] += int(quantity)
-    #products[key]['quantity'] = unicode(products[key]['quantity'],"utf-8")
-    products[pk]= {'name':name,'size':size,'quantity':quantity,'price':price}
-    request.session['cart'] = products
+#TODO use underscores for functions if they have 2 different words.
+def addtocart(request):
+    template_name='store/index.html'
+    if request.method == 'POST':
+        shirt_id = request.POST['id']
+        quantity = request.POST['quantity']
+        cart = request.session.get('cart', {})
+
+        shirt = Shirt.objects.filter(id=shirt_id).first()
+
+        cart[shirt_id]= quantity
+        request.session['cart'] = cart
+
     return HttpResponseRedirect('/tkartapp/store/')
 
 def viewcart(request,template_name='store/cart.html'):
-    try:
-        products = request.session['cart']
-    except KeyError:
-        return HttpResponseRedirect('/tkartapp/store/invalid_session/')
-    for key in products.keys():
-        shirt = Shirt.objects.all().get( id = key)
-        products[key]['price'] = str(Decimal(products[key]['quantity']) * shirt.price)
-        products[key]['price'] = unicode(products[key]['price'],"utf-8")
-    request.session['order'] = products
+    cart = request.session.get('cart', {})
+    products = {}
+
+    for shirt_id in cart:
+        shirt = Shirt.objects.get(id=shirt_id)
+        quantity_ordered = int(cart[shirt_id])
+
+        products[product_id] = {
+                'name': shirt.name,
+                'size': shirt.size,
+                'price': quantity_ordered * shirt.price
+                }
 
     return render(request,template_name,{'products':products})
 
 def checkout(request,template_name='store/checkout.html'):
-    try:
-        order = request.session['order']
-    except KeyError:
-        return HttpResponseRedirect('/tkartapp/store/invalid_session/')
     quantity = 0
     price = 0
     for key in order:
@@ -164,9 +158,10 @@ def register_user(request):
             return HttpResponseRedirect('/tkartapp/register_success/')
     else:
         form = RegistrationForm()
+
     data = RequestContext(request, {'form': form})
 
-    return render_to_response('registration/register.html',data,)
+    return render_to_response('registration/register.html',data)
 
 
 def register_success(request):
