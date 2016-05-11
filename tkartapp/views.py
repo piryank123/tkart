@@ -15,6 +15,7 @@ from django.template import RequestContext
 from django.core import serializers
 import json
 from collections import defaultdict
+from decimal import Decimal
 
 
 from ipdb import set_trace
@@ -49,6 +50,7 @@ def shirt_create(request,template_name= 'store/form.html'):
     if form.is_valid():
         form.save()
         return redirect('tkartapp:shirt_list')
+
     return render(request,template_name,{'form':form})
 
 def shirt_update(request,pk,template_name='store/form.html'):
@@ -57,6 +59,7 @@ def shirt_update(request,pk,template_name='store/form.html'):
     if form.is_valid():
         form.save()
         return redirect('tkartapp:shirt_list')
+
     return render(request,template_name,{'form':form})
 
 def shirt_delete(request, pk, template_name='store/delete.html'):
@@ -64,34 +67,64 @@ def shirt_delete(request, pk, template_name='store/delete.html'):
     if request.method=='POST':
         shirt.delete()
         return redirect('tkartapp:shirt_list')
+
     return render(request, template_name, {'object':shirt})
 
-def addtocart(request,pk,template_name='store/index.html'):
-    shirt = Shirt.objects.get(id = pk )
-    #cart_item.update({"name":shirt.name,"price":shirt.price})
-    #request.session['cart'] = cart_item['name']
-    array = ['']
-    array.append(pk)
-    request.session['cart'] = array
-    #data  ={}
-    #data['cart'] = shirt
-
-    #return render(context_instance = RequestContext(request),template_name,data)
-    #return render_to_response(template_name,context_instance=RequestContext(request))
+def addtocart(request,products={},template_name='store/index.html'):
+    pk = request.POST['id']
+    name= request.POST['name']
+    size = request.POST['size']
+    quantity = request.POST['quantity']
+    price = request.POST['price']
+    products[pk]= {'name':name,'size':size,'quantity':quantity,'price':price}
+    request.session['cart'] = products
     return HttpResponseRedirect('/tkartapp/store/')
 
 def viewcart(request,template_name='store/cart.html'):
-    #cart_items = {}
-    #cart_items.update(request.session['cart'])
-    test = request.session['cart']
+    try:
+        products = request.session['cart']
+    except KeyError:
+        return HttpResponseRedirect('/tkartapp/store/invalid_session/')
+    for key in products.keys():
+        shirt = Shirt.objects.all().get( id = key)
+        products[key]['price'] = str(Decimal(products[key]['quantity']) * shirt.price)
+        products[key]['price'] = unicode(products[key]['price'],"utf-8")
+    request.session['order'] = products
 
-    print test[1]
-    #return render_to_response(template_name,context_instance=RequestContext(request))
-    return render(request,template_name,{'test':test})
+    return render(request,template_name,{'products':products})
+
+def checkout(request,template_name='store/checkout.html'):
+    try:
+        order = request.session['order']
+    except KeyError:
+        return HttpResponseRedirect('/tkartapp/store/invalid_session/')
+    quantity = 0
+    price = 0
+    for key in order:
+        shirt = Shirt.objects.get(id= key)
+        if shirt.quantity < int(order[key]['quantity']):
+            del request.session['cart']
+            del request.session['order']
+            return HttpResponseRedirect('/tkartapp/store/outofstock/')
+        else:
+            shirt.quantity -= int(order[key]['quantity'])
+            shirt.save()
+            quantity = Decimal(quantity)  + Decimal(order[key]['quantity'])
+            price = Decimal(price) + Decimal(order[key]['price'])
+            del request.session['cart']
+            del request.session['order']
+        return render(request,template_name,{'quantity':str(quantity),'price':str(price),})
+
+def invalid_session(request):
+    return render_to_response('store/invalid_session.html')
+
+def outofstock(request):
+    return render_to_response('store/outofstock.html')
 
 def login(request):
     c = {}
     c.update(csrf(request))
+
     return render_to_response('registration/login.html', c)
 
 def auth_view(request):
@@ -105,14 +138,14 @@ def auth_view(request):
         return HttpResponseRedirect('/tkartapp/invalid/')
 
 def loggedin(request):
-    return render_to_response('registration/loggedin.html',
-                              {'full_name': request.user.username})
+    return render_to_response('registration/loggedin.html',{'full_name': request.user.username})
 
 def invalid_login(request):
     return render_to_response('registration/invalid_login.html')
 
 def logout(request):
     auth.logout(request)
+
     return render_to_response('registration/logout.html')
 
 def register_user(request):
@@ -129,8 +162,9 @@ def register_user(request):
             return HttpResponseRedirect('/tkartapp/register_success/')
     else:
         form = RegistrationForm()
-    variables = RequestContext(request, {'form': form})
-    return render_to_response('registration/register.html',variables,)
+    data = RequestContext(request, {'form': form})
+
+    return render_to_response('registration/register.html',data,)
 
 
 def register_success(request):

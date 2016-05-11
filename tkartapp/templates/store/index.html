@@ -5,8 +5,8 @@
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 </head>
 <div>
-  <h2 class="text-center">Welcome to Tkart Store</h2><a href="/tkartapp/logout/" class="text-right">Logout</a>
-
+  <h2 class="text-center">Welcome to Tkart Store</h2><a href="/tkartapp/logout/" style="right:10px;position:fixed;">Logout</a>
+    <a href="/tkartapp/store/viewcart/"> ViewCart </a>
 </div>
 <div  class="row padding20 center-block">
 {% if shirt_list %}
@@ -16,8 +16,15 @@
       <h4 class="text-center"><span id="name{{shirt.id}}">{{shirt.name}}</span> -- <span id="price{{shirt.id}}">Rs.{{shirt.price}} </span></h4>
       <p class="text-center" id="description{{shirt.id}}">{{shirt.description}}</p>
       <p class="text-center"> <span id="size{{shirt.id}}">Size:&nbsp;{{shirt.size}} &nbsp;</span> <span id="qty{{shirt.id}}">Qty:&nbsp;{{shirt.quantity}}</span> </p>
-      <a href="/tkartapp/store/addtocart/{{shirt.id}}" class="text-center center-block">Add to Cart</a>
-
+      <form action="/tkartapp/store/addtocart/" method="post">{% csrf_token %}
+      <input type="hidden" name="id" value="{{ shirt.id}}">
+      <input type="hidden" name="name" value="{{ shirt.name}}">
+      <input type="hidden" name="size" value="{{ shirt.size}}">
+      <input type="hidden" name="price" value="{{ shirt.price}}">
+      <label>Qty:</label> <input type="text" name="quantity">
+      <input type="submit" value="Add To Cart" class="btn btn-primary">
+    </form>
+    <!--<a href="/tkartapp/store/addtocart/{{shirt.id}}" class="text-center center-block">Add to Cart</a> -->
     </div>
     {% endfor %}
 </div>

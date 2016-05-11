@@ -5,15 +5,12 @@
   <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 </head>
 <div>
-  <h2 class="text-center">Cart Items:</h2><a href="/tkartapp/logout/" style="right:10px;position:fixed;">Logout</a>
+  <h2 class="text-center">Checkout:</h2><a href="/tkartapp/logout/" style="right:10px;position:fixed;">Logout</a>
 </div>
 <div  class="row padding20 center-block">
-<h3>Your Cart Items:</h3>
-Shirt -- Size -- Quantity -- Price <br/>
-{%for key, value in products.items%}
-{{value.name}} -- {{value.size}} -- {{value.quantity}} -- {{value.price}}<br/>
-{% endfor %}
+<h3>Summary:</h3>
+<h4>You have purchased {{quantity}} item(s) and your total cost is {{price}} </h4>
 
-<a href="/tkartapp/store/checkout/">Checkout</a>
+<a href= "/tkartapp/store/">Shop Again</a>
 </div>
 
