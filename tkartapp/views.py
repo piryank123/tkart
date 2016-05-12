@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.template import loader
 from django.core.urlresolvers import reverse
 from django.views import generic
-from django.core.context_processors import csrf
+from django.template.context_processors import csrf
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
