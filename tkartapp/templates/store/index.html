@@ -31,13 +31,14 @@
          -<input type="hidden" name="size" value="{{shirt.size}}">
          -<input type="hidden" name="price" value="{{shirt.price}}">
          -->
-         <label>Qty:</label> <input type="number" value="0" name="quantity">
+         <label>Qty:</label> <input type="number" value="{{ shirt.ordered_quantity }}" name="quantity">
       <input type="submit" value="Add To Cart" class="btn btn-primary">
     </form>
     <!--<a href="/tkartapp/store/add_to_cart/{{shirt.id}}" class="text-center center-block">Add to Cart</a> -->
     </div>
     {% endfor %}
 </div>
+{{request.session.cart}}
 {% else %}
     <p>No shirts are available.</p>
 {% endif %}
