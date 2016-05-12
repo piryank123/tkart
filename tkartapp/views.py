@@ -24,10 +24,8 @@ from .forms import RegistrationForm, ShirtForm
 def store(request,template_name = 'store/index.html'):
     shirts = Shirt.objects.all()
     cart = request.session.get('cart', {})
-
     for shirt in shirts:
         shirt.ordered_quantity = cart.get(str(shirt.id), 0)
-
     message = request.GET.get('message','')
     if message == 'error':
         message = 'You have selected an invalid quantity'
