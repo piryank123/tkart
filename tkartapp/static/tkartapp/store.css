@@ -47,3 +47,7 @@ h4,p{
 .hidden{
   opacity:0;
 }
+.message{
+    width:400px;
+}
+
