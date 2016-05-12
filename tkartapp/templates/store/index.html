@@ -7,7 +7,6 @@
 </head>
 <div>
   <h2 class="text-center">Welcome to Tkart Store</h2><a href="/tkartapp/logout/" style="right:10px;position:fixed;">Logout</a>
-
   <a href="/tkartapp/store/viewcart/"> ViewCart </a>
 </div>
   {% if  message %}
@@ -28,9 +27,9 @@
       <form action="/tkartapp/store/add_to_cart/" method="post">{% csrf_token %}
       <input type="hidden" name="id" value="{{ shirt.id}}">
       <!--
-         -<input type="hidden" name="name" value="{{ shirt.name}}">
-         -<input type="hidden" name="size" value="{{ shirt.size}}">
-         -<input type="hidden" name="price" value="{{ shirt.price}}">
+         -<input type="hidden" name="name" value="{{shirt.name}}">
+         -<input type="hidden" name="size" value="{{shirt.size}}">
+         -<input type="hidden" name="price" value="{{shirt.price}}">
          -->
          <label>Qty:</label> <input type="number" value="0" name="quantity">
       <input type="submit" value="Add To Cart" class="btn btn-primary">
@@ -39,7 +38,6 @@
     </div>
     {% endfor %}
 </div>
-{{request.session.cart}}
 {% else %}
     <p>No shirts are available.</p>
 {% endif %}
